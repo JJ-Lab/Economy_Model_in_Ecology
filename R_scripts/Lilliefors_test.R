@@ -45,27 +45,45 @@ for (i in seq(length(list_files))){
   #                 )
   
   
-  if(length(degree_plants)>4){
+  if(length(degree_plants)>30){
     l_deg_plants <- lillie.test(log(degree_plants))
     l_str_plants <- lillie.test(log(strength_plants))
     l_deg_plants <- l_deg_plants$p.value
     l_str_plants <- l_str_plants$p.value
-  }else{
+  }
+  else if(length(degree_plants)>3){
+    l_deg_plants <- shapiro.test(log(degree_plants))
+    l_str_plants <- shapiro.test(log(strength_plants))
+    l_deg_plants <- l_deg_plants$p.value
+    l_str_plants <- l_str_plants$p.value
+  }
+  else{
     l_deg_plants <- NA
     l_str_plants <- NA
   }
   
-  if(length(degree_poll)>4){
+  if(length(degree_poll)>30){
     
     if(sum(log(degree_poll))>0){
       l_deg_poll <- lillie.test(log(degree_poll))
       l_deg_poll <- l_deg_poll$p.value
       }
-    else{
-      l_deg_poll <- NA} #To avoid error in "M_PL_061_33"
+    else{l_deg_poll <- NA} #To avoid error in "M_PL_061_33"
     
     l_str_poll <- lillie.test(log(strength_poll))
     l_str_poll <- l_str_poll$p.value
+    
+  }else if(length(degree_poll)>3){
+    
+    if(sum(log(degree_poll))>0){
+      l_deg_poll <- shapiro.test(log(degree_poll))
+      l_deg_poll <- l_deg_poll$p.value
+    }
+    else{l_deg_poll <- NA} #To avoid error in "M_PL_061_33"
+    
+    l_str_poll <- shapiro.test(log(strength_poll))
+    l_str_poll <- l_str_poll$p.value
+    
   }else{
     l_deg_poll <- NA
     l_str_poll <- NA
@@ -88,14 +106,6 @@ datasets_test %>% filter(l_deg_plants<0.05) %>% count()
 datasets_test %>% filter(l_str_plants<0.05) %>% count()
 
 write_csv(datasets_test,"lnormal_fits/results_Lilliefors_test")
-
-
-
-pdf(paste0("lnormal_fits/lilliefors_test_results.pdf"),
-    width = 11.69, # The width of the plot in inches
-    height = 8.27)
-
-
 
 p1<- ggplot(datasets_test)+
   geom_point(aes(x=as.factor(data_set),y=l_deg_plants))+theme_minimal()+
@@ -126,10 +136,14 @@ p4 <- ggplot(datasets_test)+
        x ="Datasets", y = "p-value")
 
 figure <- grid.arrange(p1,p2,p3,p4, 
-             ncol = 2, nrow = 2)
+                       ncol = 2, nrow = 2)
+
+pdf(paste0("lnormal_fits/lilliefors_test_results.pdf"),
+    width = 11.69, # The width of the plot in inches
+    height = 8.27)
 
 annotate_figure(figure,
-                top = text_grob("Lilliefors test (p-values)", color = "red", face = "bold", size = 14))
+                top = text_grob(" Shapiro-Wilk and Lilliefors test (p-values)", color = "red", face = "bold", size = 14))
 
 
 dev.off()
