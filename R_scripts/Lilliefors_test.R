@@ -82,6 +82,11 @@ for (i in seq(length(list_files))){
   
 }
 
+datasets_test %>% filter(l_deg_poll<0.05) %>% count()
+datasets_test %>% filter(l_str_poll<0.05) %>% count()
+datasets_test %>% filter(l_deg_plants<0.05) %>% count()
+datasets_test %>% filter(l_str_plants<0.05) %>% count()
+
 write_csv(datasets_test,"lnormal_fits/results_Lilliefors_test")
 
 
